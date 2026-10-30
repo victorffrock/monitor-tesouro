@@ -45,10 +45,7 @@ def main() -> None:
             "pu_venda": 1000.0,
         },
     ]
-    window.rows = points
-    window.maturities = chart.maturity_dates(points)
-    window.selected_maturity = maturity
-    window._update_chart()
+    window._apply_history(points, "Dados de demonstração para o smoke test.", None)
 
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1000, 420)
     context = cairo.Context(surface)
