@@ -56,7 +56,7 @@ def main() -> None:
     assert app.lookup_action("about") is not None
     about = window.create_about_dialog()
     assert about.get_application_name() == "Monitor Tesouro"
-    assert about.get_version() == "1.0.8"
+    assert about.get_version() == "1.0.9"
     assert about.get_developer_name() == "Victor Ferreira Franco"
     assert list(about.get_developers()) == ["Victor Ferreira Franco"]
     assert about.get_website().endswith("monitor-tesouro")
