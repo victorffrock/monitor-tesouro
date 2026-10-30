@@ -15,7 +15,7 @@ RUNTIME_SHA256="617aa77314d57c8b8e4fae9c3f0b35af7b30d5529cb69e98f64f92510ed98a46
 APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
 RUNTIME_URL="https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-x86_64"
 
-for command in python3 curl sha256sum ldd; do
+for command in python3 curl sha256sum ldd rsvg-convert; do
     command -v "$command" >/dev/null || { echo "Dependência ausente: $command" >&2; exit 1; }
 done
 [[ "$(uname -m)" == "x86_64" ]] || { echo "Este build gera AppImage x86_64." >&2; exit 1; }
@@ -31,7 +31,9 @@ mkdir -p "$APPDIR/usr/bin" "$APPDIR/usr/lib" "$APPDIR/usr/src" "$DIST"
 install -Dm755 "$ROOT/packaging/AppDir/AppRun" "$APPDIR/AppRun"
 VERSION="${TAG#v}"
 sed "s/@VERSION@/$VERSION/g" "$ROOT/packaging/AppDir/monitor-tesouro.desktop" > "$APPDIR/monitor-tesouro.desktop"
-install -Dm644 "$ROOT/packaging/AppDir/monitor-tesouro.svg" "$APPDIR/monitor-tesouro.svg"
+rsvg-convert --width 256 --height 256 "$ROOT/packaging/AppDir/monitor-tesouro.svg" \
+    -o "$APPDIR/monitor-tesouro.png"
+install -Dm644 "$APPDIR/monitor-tesouro.png" "$APPDIR/.DirIcon"
 cp -a "$ROOT/src/monitor_tesouro" "$APPDIR/usr/src/monitor_tesouro"
 cp -a "$PYTHON_STDLIB" "$APPDIR/usr/lib/"
 install -Dm755 "$PYTHON" "$APPDIR/usr/bin/python3"
