@@ -23,6 +23,8 @@ from . import chart, core, data  # noqa: E402
 
 
 APP_ID = "br.com.victorffrock.MonitorTesouro"
+APP_VERSION = "1.0.8"
+PROJECT_URL = "https://github.com/victorffrock/monitor-tesouro"
 COLOR_BUY = (0.16, 0.47, 0.84)
 COLOR_SELL = (0.16, 0.57, 0.39)
 PERIODS = (("30 dias", 30), ("90 dias", 90), ("1 ano", 365), ("Tudo", 0))
@@ -148,6 +150,15 @@ class MonitorWindow(Adw.ApplicationWindow):
         self.refresh_button.add_css_class("suggested-action")
         self.refresh_button.connect("clicked", self.refresh_history)
         header.pack_end(self.refresh_button)
+
+        # O menu principal contém as informações institucionais do aplicativo.
+        self.about_button = Gtk.MenuButton()
+        self.about_button.set_icon_name("open-menu-symbolic")
+        self.about_button.set_tooltip_text("Menu")
+        menu = Gio.Menu()
+        menu.append("Sobre o Monitor Tesouro", "app.about")
+        self.about_button.set_menu_model(menu)
+        header.pack_end(self.about_button)
         toolbar.add_top_bar(header)
 
         clamp = Adw.Clamp(maximum_size=1100, tightening_threshold=820)
@@ -218,10 +229,13 @@ class MonitorWindow(Adw.ApplicationWindow):
             button = Gtk.ToggleButton(label=label)
             if index:
                 button.set_group(self.period_buttons[0])
-            button.connect("toggled", self._on_period_changed, days)
             controls.append(button)
             self.period_buttons.append(button)
+        # Defina a opção inicial antes de ligar os sinais, evitando um redesenho
+        # durante a construção, antes de o canvas existir.
         self.period_buttons[-1].set_active(True)
+        for button, (_, days) in zip(self.period_buttons, PERIODS):
+            button.connect("toggled", self._on_period_changed, days)
         card.append(controls)
 
         self.chart = RateChart()
@@ -280,6 +294,28 @@ class MonitorWindow(Adw.ApplicationWindow):
             following = child.get_next_sibling()
             container.remove(child)
             child = following
+
+    def create_about_dialog(self) -> Adw.AboutDialog:
+        """Cria o diálogo padrão do GNOME com créditos, documentação e links."""
+        dialog = Adw.AboutDialog()
+        dialog.set_application_name("Monitor Tesouro")
+        dialog.set_application_icon("monitor-tesouro")
+        dialog.set_version(APP_VERSION)
+        dialog.set_developer_name("Victor Ferreira Franco")
+        dialog.set_developers(["Victor Ferreira Franco"])
+        dialog.set_comments(
+            "Monitor de taxas e histórico dos títulos Tesouro IPCA+. "
+            "Desenvolvido por Victor Ferreira Franco, com assistência de "
+            "inteligência artificial (OpenAI Codex)."
+        )
+        dialog.set_copyright("© 2026 Victor Ferreira Franco")
+        dialog.set_license("GPL-3.0-only")
+        dialog.set_website(PROJECT_URL)
+        dialog.set_issue_url(f"{PROJECT_URL}/issues")
+        dialog.add_link("Documentação", f"{PROJECT_URL}#readme")
+        dialog.add_link("Código-fonte", PROJECT_URL)
+        dialog.add_credit_section("Assistência de IA", ["OpenAI Codex"])
+        return dialog
 
     def refresh_history(self, *_args) -> None:
         """Atualiza em segundo plano sem bloquear a janela."""
@@ -399,6 +435,15 @@ class MonitorApplication(Adw.Application):
             flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
         )
         self.window = None
+        about_action = Gio.SimpleAction.new("about", None)
+        about_action.connect("activate", self._show_about_dialog)
+        self.add_action(about_action)
+
+    def _show_about_dialog(self, *_args) -> None:
+        """Apresenta o diálogo libadwaita associado à janela ativa."""
+        if self.window is None:
+            self.do_activate()
+        self.window.create_about_dialog().present(self.window)
 
     def do_activate(self):
         if self.window is None:
