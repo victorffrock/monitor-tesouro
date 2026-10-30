@@ -296,7 +296,7 @@ class MonitorWindow(Adw.ApplicationWindow):
         """Cria o diálogo padrão do GNOME com créditos, documentação e links."""
         dialog = Adw.AboutDialog()
         dialog.set_application_name("Monitor Tesouro")
-        dialog.set_application_icon(APP_ID)
+        dialog.set_application_icon("monitor-tesouro")
         dialog.set_version(APP_VERSION)
         dialog.set_developer_name("Victor Ferreira Franco")
         dialog.set_developers(["Victor Ferreira Franco"])
