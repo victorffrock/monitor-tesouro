@@ -30,7 +30,7 @@ jobs:
         run: |
           python -m pip install --no-deps --target "$RUNNER_TEMP/monitor-tesouro-install" dist/*.whl
           PYTHONPATH="$RUNNER_TEMP/monitor-tesouro-install" python -c "import monitor_tesouro.core"
-          "$RUNNER_TEMP/monitor-tesouro-install/bin/monitor-tesouro" --help
+          PYTHONPATH="$RUNNER_TEMP/monitor-tesouro-install" "$RUNNER_TEMP/monitor-tesouro-install/bin/monitor-tesouro" --help
 
   tests:
     name: Test Python ${{ matrix.python-version }}
