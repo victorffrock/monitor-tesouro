@@ -40,10 +40,10 @@ class ParserTests(unittest.TestCase):
 
     def test_mantem_serie_historica_completa_quando_solicitada(self):
         csv_text = (
-            "Tipo Titulo;Data Vencimento;Data Base;Taxa Compra Manhã;Taxa Venda Manhã;PU Compra Manhã;PU Venda Manhã\\n"
-            "Tesouro IPCA+;15/05/2035;27/10/2026;7,10;7,20;900,00;890,00\\n"
-            "Tesouro IPCA+;15/05/2035;28/10/2026;8,10;8,20;1.000,00;990,00\\n"
-            "Tesouro IPCA+;15/05/2040;27/10/2026;7,30;7,40;800,00;790,00\\n"
+            "Tipo Titulo;Data Vencimento;Data Base;Taxa Compra Manhã;Taxa Venda Manhã;PU Compra Manhã;PU Venda Manhã\n"
+            "Tesouro IPCA+;15/05/2035;27/10/2026;7,10;7,20;900,00;890,00\n"
+            "Tesouro IPCA+;15/05/2035;28/10/2026;8,10;8,20;1.000,00;990,00\n"
+            "Tesouro IPCA+;15/05/2040;27/10/2026;7,30;7,40;800,00;790,00\n"
         ).encode("utf-8")
         rows = parse_csv(csv_text, somente_recente=False)
         self.assertEqual(len(rows), 3)
