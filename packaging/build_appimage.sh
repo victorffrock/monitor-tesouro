@@ -24,7 +24,7 @@ PYTHON="$(readlink -f "$(command -v python3)")"
 PYTHON_VERSION="$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
 PYTHON_STDLIB="/usr/lib/python$PYTHON_VERSION"
 [[ -x "$PYTHON" && -d "$PYTHON_STDLIB/lib-dynload" ]] || { echo "Python de sistema não encontrado em $PYTHON_STDLIB." >&2; exit 1; }
-python3 -c 'import _ssl, _tkinter, tkinter, tomllib' || { echo "Instale Python, Tkinter e os módulos SSL/TOML do sistema." >&2; exit 1; }
+python3 -c 'import _ssl, gi, gi._gi_cairo, tomllib; gi.require_version("Gtk", "4.0"); gi.require_version("Adw", "1"); from gi.repository import Gtk, Adw' || { echo "Instale Python, PyGObject, GTK 4 e libadwaita." >&2; exit 1; }
 
 rm -rf "$APPDIR" "$DIST"
 mkdir -p "$APPDIR/usr/bin" "$APPDIR/usr/lib" "$APPDIR/usr/src" "$DIST"
@@ -36,15 +36,23 @@ cp "$APPDIR/monitor-tesouro.png" "$APPDIR/.DirIcon"
 test -s "$APPDIR/monitor-tesouro.png" && test -s "$APPDIR/.DirIcon"
 cp -a "$ROOT/src/monitor_tesouro" "$APPDIR/usr/src/monitor_tesouro"
 cp -a "$PYTHON_STDLIB" "$APPDIR/usr/lib/"
+mkdir -p "$APPDIR/usr/lib/python3/dist-packages"
+cp -a /usr/lib/python3/dist-packages/gi "$APPDIR/usr/lib/python3/dist-packages/"
+mkdir -p "$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0"
+cp -a /usr/lib/x86_64-linux-gnu/girepository-1.0/. "$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0/"
 install -Dm755 "$PYTHON" "$APPDIR/usr/bin/python3"
 
 # Bundle only non-core shared libraries required by Python SSL/Tk and their closure.
 libdir="$APPDIR/usr/lib/x86_64-linux-gnu"
 mkdir -p "$libdir"
 SSL_MODULE="$(find "$APPDIR/usr/lib/python$PYTHON_VERSION/lib-dynload" -maxdepth 1 -name '_ssl*.so' -print -quit)"
-TK_MODULE="$(find "$APPDIR/usr/lib/python$PYTHON_VERSION/lib-dynload" -maxdepth 1 -name '_tkinter*.so' -print -quit)"
-[[ -n "$SSL_MODULE" && -n "$TK_MODULE" ]] || { echo "Módulos _ssl/_tkinter ausentes no runtime incluído." >&2; exit 1; }
-queue=("$APPDIR/usr/bin/python3" "$SSL_MODULE" "$TK_MODULE")
+GI_MODULE="$(find /usr/lib/python3/dist-packages/gi -name '_gi*.so' -print -quit)"
+[[ -n "$SSL_MODULE" && -n "$GI_MODULE" ]] || { echo "Módulos _ssl/PyGObject ausentes no runtime incluído." >&2; exit 1; }
+GTK_LIB="/usr/lib/x86_64-linux-gnu/libgtk-4.so.1"
+ADW_LIB="/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0"
+install -Dm755 "$GTK_LIB" "$libdir/$(basename "$GTK_LIB")"
+install -Dm755 "$ADW_LIB" "$libdir/$(basename "$ADW_LIB")"
+queue=("$APPDIR/usr/bin/python3" "$SSL_MODULE" "$GI_MODULE" "$libdir/$(basename "$GTK_LIB")" "$libdir/$(basename "$ADW_LIB")")
 while ((${#queue[@]})); do
     object="${queue[0]}"
     queue=("${queue[@]:1}")
@@ -62,9 +70,8 @@ while ((${#queue[@]})); do
     done < <(ldd "$object" 2>/dev/null | awk '$2 == "=>" && $3 ~ /^\// {print $3} $1 ~ /^\// {print $1}')
 done
 
-mkdir -p "$APPDIR/usr/share/tcltk" "$APPDIR/usr/lib/tcltk"
-cp -a /usr/share/tcltk/. "$APPDIR/usr/share/tcltk/"
-if [[ -d /usr/lib/tcltk ]]; then cp -a /usr/lib/tcltk/. "$APPDIR/usr/lib/tcltk/"; fi
+mkdir -p "$APPDIR/usr/share/glib-2.0/schemas"
+cp -a /usr/share/glib-2.0/schemas/. "$APPDIR/usr/share/glib-2.0/schemas/"
 install -Dm644 "$ROOT/LICENSE" "$APPDIR/usr/share/licenses/monitor-tesouro/LICENSE"
 install -Dm644 "$ROOT/config.exemplo.toml" "$APPDIR/usr/share/monitor-tesouro/config.exemplo.toml"
 

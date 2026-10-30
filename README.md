@@ -9,7 +9,7 @@ Aplicação Linux para acompanhar taxas dos títulos Tesouro IPCA+ principal, co
 
 Obtenha a versão mais recente em [Releases](https://github.com/victorffrock/monitor-tesouro/releases/latest). O release inclui:
 
-- `Monitor-Tesouro-x86_64.AppImage`: aplicativo gráfico com Python/Tkinter e dependências de runtime incluídos.
+- `Monitor-Tesouro-x86_64.AppImage`: aplicativo gráfico com GTK 4, libadwaita e dependências de runtime incluídos.
 - `Monitor-Tesouro-x86_64.AppImage.zsync`: metadado para atualização incremental no Gear Lever/AppImageUpdate.
 - `Monitor-Tesouro-sem-fuse.sh`: launcher opcional que usa extract-and-run quando FUSE não está disponível.
 
@@ -19,7 +19,7 @@ No Fedora Silverblue, marque o AppImage como executável e abra-o. Para usar o l
 
 A tela principal mostra um gráfico amplo com a evolução das taxas de compra e venda. Escolha o vencimento e o período que deseja ver. A tabela abaixo mostra as taxas mais recentes; selecione uma linha para abrir o histórico daquele título.
 
-O histórico é criado a partir das atualizações feitas enquanto o app está instalado e fica em `~/.local/share/monitor-tesouro/historico.csv`. Registros anteriores são preservados ao atualizar o aplicativo. Os dados históricos não são baixados de outro serviço, então o gráfico vai ganhando pontos com o uso.
+O gráfico consulta a série diária pública completa do Tesouro Transparente, que contém dados desde 2002. Assim, o primeiro uso já pode mostrar anos de histórico, mesmo sem coletas anteriores nesta máquina. A conexão é necessária para atualizar e consultar a fonte; a aplicação também mantém dados locais usados pelo monitor.
 
 ## Recursos
 
@@ -36,7 +36,7 @@ O programa consulta dados públicos do Tesouro Transparente e mantém configura�
 
 ## Execução pelo código-fonte
 
-Requer Python 3.11+; no Linux, instale também Tkinter (por exemplo, `python3-tk`). Para abrir a interface:
+Requer Python 3.11+, GTK 4, libadwaita e PyGObject (por exemplo, `python3-gi`, `gir1.2-gtk-4.0` e `gir1.2-adw-1` no Ubuntu). Para abrir a interface:
 
 ```bash
 PYTHONPATH=src python -m monitor_tesouro
