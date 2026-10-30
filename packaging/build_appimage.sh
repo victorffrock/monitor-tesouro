@@ -15,7 +15,7 @@ RUNTIME_SHA256="617aa77314d57c8b8e4fae9c3f0b35af7b30d5529cb69e98f64f92510ed98a46
 APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
 RUNTIME_URL="https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-x86_64"
 
-for command in python3 curl sha256sum ldd rsvg-convert; do
+for command in python3 curl sha256sum ldd rsvg-convert xvfb-run; do
     command -v "$command" >/dev/null || { echo "Dependência ausente: $command" >&2; exit 1; }
 done
 [[ "$(uname -m)" == "x86_64" ]] || { echo "Este build gera AppImage x86_64." >&2; exit 1; }
@@ -24,7 +24,7 @@ PYTHON="$(readlink -f "$(command -v python3)")"
 PYTHON_VERSION="$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
 PYTHON_STDLIB="/usr/lib/python$PYTHON_VERSION"
 [[ -x "$PYTHON" && -d "$PYTHON_STDLIB/lib-dynload" ]] || { echo "Python de sistema não encontrado em $PYTHON_STDLIB." >&2; exit 1; }
-python3 -c 'import _ssl, gi, gi._gi_cairo, tomllib; gi.require_version("Gtk", "4.0"); gi.require_version("Adw", "1"); from gi.repository import Gtk, Adw' || { echo "Instale Python, PyGObject, GTK 4 e libadwaita." >&2; exit 1; }
+python3 -c 'import _ssl, cairo, gi, gi._gi_cairo, tomllib; gi.require_version("Gtk", "4.0"); gi.require_version("Adw", "1"); from gi.repository import Gtk, Adw' || { echo "Instale Python, PyGObject, GTK 4 e libadwaita." >&2; exit 1; }
 
 rm -rf "$APPDIR" "$DIST"
 mkdir -p "$APPDIR/usr/bin" "$APPDIR/usr/lib" "$APPDIR/usr/src" "$DIST"
@@ -38,21 +38,24 @@ cp -a "$ROOT/src/monitor_tesouro" "$APPDIR/usr/src/monitor_tesouro"
 cp -a "$PYTHON_STDLIB" "$APPDIR/usr/lib/"
 mkdir -p "$APPDIR/usr/lib/python3/dist-packages"
 cp -a /usr/lib/python3/dist-packages/gi "$APPDIR/usr/lib/python3/dist-packages/"
+cp -a /usr/lib/python3/dist-packages/cairo "$APPDIR/usr/lib/python3/dist-packages/"
 mkdir -p "$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0"
 cp -a /usr/lib/x86_64-linux-gnu/girepository-1.0/. "$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0/"
 install -Dm755 "$PYTHON" "$APPDIR/usr/bin/python3"
 
-# Bundle only non-core shared libraries required by Python SSL/Tk and their closure.
+# Bundle only non-core shared libraries required by Python GTK/Cairo/SSL and their closure.
 libdir="$APPDIR/usr/lib/x86_64-linux-gnu"
 mkdir -p "$libdir"
 SSL_MODULE="$(find "$APPDIR/usr/lib/python$PYTHON_VERSION/lib-dynload" -maxdepth 1 -name '_ssl*.so' -print -quit)"
 GI_MODULE="$(find /usr/lib/python3/dist-packages/gi -name '_gi*.so' -print -quit)"
-[[ -n "$SSL_MODULE" && -n "$GI_MODULE" ]] || { echo "Módulos _ssl/PyGObject ausentes no runtime incluído." >&2; exit 1; }
+GI_CAIRO_MODULE="$(find /usr/lib/python3/dist-packages/gi -name '_gi_cairo*.so' -print -quit)"
+CAIRO_MODULE="$(find /usr/lib/python3/dist-packages/cairo -name '*.so' -print -quit)"
+[[ -n "$SSL_MODULE" && -n "$GI_MODULE" && -n "$GI_CAIRO_MODULE" && -n "$CAIRO_MODULE" ]] || { echo "Módulos _ssl/PyGObject ausentes no runtime incluído." >&2; exit 1; }
 GTK_LIB="/usr/lib/x86_64-linux-gnu/libgtk-4.so.1"
 ADW_LIB="/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0"
 install -Dm755 "$GTK_LIB" "$libdir/$(basename "$GTK_LIB")"
 install -Dm755 "$ADW_LIB" "$libdir/$(basename "$ADW_LIB")"
-queue=("$APPDIR/usr/bin/python3" "$SSL_MODULE" "$GI_MODULE" "$libdir/$(basename "$GTK_LIB")" "$libdir/$(basename "$ADW_LIB")")
+queue=("$APPDIR/usr/bin/python3" "$SSL_MODULE" "$GI_MODULE" "$GI_CAIRO_MODULE" "$CAIRO_MODULE" "$libdir/$(basename "$GTK_LIB")" "$libdir/$(basename "$ADW_LIB")")
 while ((${#queue[@]})); do
     object="${queue[0]}"
     queue=("${queue[@]:1}")
@@ -72,6 +75,15 @@ done
 
 mkdir -p "$APPDIR/usr/share/glib-2.0/schemas"
 cp -a /usr/share/glib-2.0/schemas/. "$APPDIR/usr/share/glib-2.0/schemas/"
+
+# Validate the bundled libraries and chart callback before producing an artifact.
+xvfb-run -a env \
+    PYTHONHOME="$APPDIR/usr" \
+    PYTHONPATH="$APPDIR/usr/src:$APPDIR/usr/lib/python3/dist-packages" \
+    LD_LIBRARY_PATH="$libdir" \
+    GI_TYPELIB_PATH="$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0" \
+    GSETTINGS_SCHEMA_DIR="$APPDIR/usr/share/glib-2.0/schemas" \
+    "$APPDIR/usr/bin/python3" "$ROOT/packaging/gtk_smoke.py"
 install -Dm644 "$ROOT/LICENSE" "$APPDIR/usr/share/licenses/monitor-tesouro/LICENSE"
 install -Dm644 "$ROOT/config.exemplo.toml" "$APPDIR/usr/share/monitor-tesouro/config.exemplo.toml"
 
