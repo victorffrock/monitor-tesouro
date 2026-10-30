@@ -16,7 +16,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gtk  # noqa: E402
 
-from monitor_tesouro.gui import APP_ID, MonitorApplication, MonitorWindow  # noqa: E402
+from monitor_tesouro.gui import MonitorApplication, MonitorWindow  # noqa: E402
 
 
 def main() -> None:
