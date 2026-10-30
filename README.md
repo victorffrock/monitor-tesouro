@@ -3,58 +3,58 @@
 [![CI](https://github.com/victorffrock/monitor-tesouro/actions/workflows/ci.yml/badge.svg)](https://github.com/victorffrock/monitor-tesouro/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/victorffrock/monitor-tesouro)](https://github.com/victorffrock/monitor-tesouro/releases/latest)
 
-Aplicação Linux para acompanhar taxas dos títulos Tesouro IPCA+ principal, com um gráfico histórico de compra e venda, alertas simples e dados guardados localmente.
+Aplicativo Linux para acompanhar as taxas dos títulos públicos Tesouro IPCA+, comparar compra e venda ao longo do tempo e consultar cotações recentes.
 
-## Baixar
-
-Obtenha a versão mais recente em [Releases](https://github.com/victorffrock/monitor-tesouro/releases/latest). O release inclui:
-
-- `Monitor-Tesouro-x86_64.AppImage`: aplicativo gráfico com GTK 4, libadwaita e dependências de runtime incluídos.
-- `Monitor-Tesouro-x86_64.AppImage.zsync`: metadado para atualização incremental no Gear Lever/AppImageUpdate.
-- `Monitor-Tesouro-sem-fuse.sh`: launcher opcional que usa extract-and-run quando FUSE não está disponível.
-
-No Fedora Silverblue, marque o AppImage como executável e abra-o. Para usar o launcher sem FUSE, mantenha os dois arquivos na mesma pasta e execute `./Monitor-Tesouro-sem-fuse.sh`.
-
-## Acompanhar as taxas
-
-A tela principal mostra um gráfico amplo com a evolução das taxas de compra e venda. Escolha o vencimento e o período que deseja ver. A lista abaixo mostra as cotações mais recentes; selecione um título para destacar sua série no gráfico.
-
-O gráfico consulta a série diária pública completa do Tesouro Transparente, que contém dados desde 2002. Assim, o primeiro uso já pode mostrar anos de histórico, mesmo sem coletas anteriores nesta máquina. A primeira consulta baixa a série oficial; depois o aplicativo guarda uma cópia comprimida no cache do usuário e solicita apenas atualizações quando a fonte publica uma versão nova. Se estiver sem rede, abre o cache e o histórico CSV das versões anteriores.
-
-## Créditos
-
-O diálogo **Sobre o Monitor Tesouro** identifica Victor Ferreira Franco como desenvolvedor, oferece links para documentação, código-fonte e suporte, e declara a assistência de inteligência artificial (OpenAI Codex).
-
-## Organização do código
-
-- `core.py`: parser CSV, execução CLI, alertas e histórico legado.
-- `data.py`: cache comprimido com gravação atômica, atualização HTTP condicional e fallback offline.
-- `chart.py`: seleção pura de vencimento/período, escala e conversão dos pontos para coordenadas.
-- `gui.py`: janela GTK 4/libadwaita, controles e renderização Cairo.
-- `tests/` e `packaging/gtk_smoke.py`: testes de parser, cache, geometria do gráfico e renderização real da janela.
+![Monitor Tesouro exibindo o histórico completo das taxas de um título Tesouro IPCA+](docs/images/monitor-tesouro-historico.png)
 
 ## Recursos
 
-- Consulta o CSV diário oficial do Tesouro Transparente.
-- Mostra taxas de compra e venda, preço unitário e data-base.
-- Compara a evolução das taxas ao longo do tempo por vencimento.
-- Detecta cruzamentos dos patamares configurados e pode exibir notificações na área de trabalho.
-- Guarda estado, histórico e logs localmente em `~/.local/share/monitor-tesouro/`.
-- Não envia e-mails nem exige dependências Python externas; requer Python 3.11+ no modo código-fonte.
+- Gráfico histórico amplo com as taxas de compra e venda.
+- Filtros de 30 dias, 90 dias, um ano ou todo o histórico.
+- Seleção por vencimento e lista de cotações mais recentes.
+- Histórico oficial do Tesouro Transparente, mesmo em uma instalação nova.
+- Cache local para abrir os dados anteriores quando estiver sem conexão.
+- Interface GTK 4 e libadwaita, seguindo os padrões visuais do GNOME.
+- AppImage com runtime incluído, launcher sem FUSE e suporte a atualização pelo Gear Lever.
+- Notificações opcionais na área de trabalho quando as taxas cruzam os limites configurados.
 
-## Dados e privacidade
+A aplicação não envia e-mails, não pede senha SMTP e não é recomendação de investimento.
 
-O programa consulta dados públicos do Tesouro Transparente e mantém configuração, histórico e logs localmente. Notificações, se habilitadas, usam a área de trabalho do Linux. O app não pede endereço de e-mail nem senha SMTP. Este projeto serve para monitoramento informativo, não é recomendação de investimento.
+## Baixar
 
-## Execução pelo código-fonte
+Baixe a versão mais recente na página de [Releases](https://github.com/victorffrock/monitor-tesouro/releases/latest). O release inclui:
 
-Requer Python 3.11+, GTK 4, libadwaita, PyGObject e Cairo (por exemplo, `python3-gi`, `python3-gi-cairo`, `gir1.2-gtk-4.0` e `gir1.2-adw-1` no Ubuntu). Para abrir a interface:
+- `Monitor-Tesouro-x86_64.AppImage`: aplicativo gráfico e runtime incluído.
+- `Monitor-Tesouro-x86_64.AppImage.zsync`: arquivo de atualização incremental.
+- `Monitor-Tesouro-sem-fuse.sh`: launcher opcional para iniciar sem FUSE. Mantenha-o na mesma pasta do AppImage.
+
+Marque o AppImage como executável e abra-o. Para usar o launcher, execute `./Monitor-Tesouro-sem-fuse.sh` na pasta onde os dois arquivos foram salvos.
+
+## Histórico de taxas
+
+O gráfico consulta a série diária pública do Tesouro Transparente, com dados desde 2002. Na primeira execução, o app baixa a série oficial e guarda uma cópia comprimida em cache. Atualizações posteriores verificam se há dados novos; sem conexão, o cache continua disponível.
+
+## Atualizações pelo Gear Lever
+
+O AppImage publica metadados `.zsync` para atualização pelo Gear Lever. A versão atualizada do pacote usa uma URL estável de download do arquivo `.zsync`, sem consultar a API REST de releases do GitHub. Isso evita que a verificação dependa da cota anônima dessa API.
+
+## Créditos
+
+O diálogo **Sobre o Monitor Tesouro** identifica **Victor Ferreira Franco** como desenvolvedor e informa que o projeto teve assistência de inteligência artificial (**OpenAI Codex**). O código é distribuído sob a licença GPL-3.0-only.
+
+## Privacidade
+
+A aplicação consulta apenas dados públicos do Tesouro Transparente. Configuração, histórico e logs ficam localmente em `~/.local/share/monitor-tesouro/`.
+
+## Executar pelo código-fonte
+
+Requer Python 3.11+, GTK 4, libadwaita, PyGObject e Cairo. No Ubuntu, instale `python3-gi`, `python3-gi-cairo`, `gir1.2-gtk-4.0` e `gir1.2-adw-1`. Em seguida:
 
 ```bash
 PYTHONPATH=src python -m monitor_tesouro
 ```
 
-Execute os testes e as verificações de qualidade usadas na CI:
+## Desenvolvimento
 
 ```bash
 python -m pip install -e '.[dev]'
@@ -63,17 +63,11 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 python -m build
 ```
 
-A CI repete os testes em Python 3.11, 3.12 e 3.13, instala o pacote construído e verifica o comando de terminal. O CodeQL analisa o código em pull requests e semanalmente.
+A CI executa os testes em Python 3.11, 3.12 e 3.13, verifica lint e build e testa a janela GTK/libadwaita. O CodeQL analisa o código em pull requests.
 
-## Build e publicação
+## Build do AppImage
 
-O workflow de release gera o AppImage e seu `.zsync` quando uma GitHub Release é publicada. Crie uma release com tag `v*`; o workflow anexa os três artefatos. Para reproduzir localmente em Ubuntu 24.04/Debian equivalente, instale os pacotes listados em `packaging/README.md` e execute:
-
-```bash
-GITHUB_REPOSITORY=victorffrock/monitor-tesouro GITHUB_REF_NAME=v1.0.0 packaging/build_appimage.sh
-```
-
-O AppImage contém update information `gh-releases-zsync` apontando para a release mais recente deste repositório. O arquivo `.zsync` gerado é necessário para atualizações delta.
+O workflow gera e anexa o AppImage, o arquivo `.zsync` e o launcher sem FUSE quando uma GitHub Release é publicada. Para instruções do build local, consulte [packaging/README.md](packaging/README.md).
 
 ## Licença
 
