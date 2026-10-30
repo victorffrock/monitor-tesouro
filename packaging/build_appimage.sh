@@ -24,7 +24,7 @@ PYTHON="$(readlink -f "$(command -v python3)")"
 PYTHON_VERSION="$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
 PYTHON_STDLIB="/usr/lib/python$PYTHON_VERSION"
 [[ -x "$PYTHON" && -d "$PYTHON_STDLIB/lib-dynload" ]] || { echo "Python de sistema não encontrado em $PYTHON_STDLIB." >&2; exit 1; }
-python3 -c 'import _ssl, gi, tomllib; gi.require_version("Gtk", "4.0"); gi.require_version("Adw", "1"); from gi.repository import Gtk, Adw' || { echo "Instale Python, PyGObject, GTK 4 e libadwaita." >&2; exit 1; }
+python3 -c 'import _ssl, gi, gi._gi_cairo, tomllib; gi.require_version("Gtk", "4.0"); gi.require_version("Adw", "1"); from gi.repository import Gtk, Adw' || { echo "Instale Python, PyGObject, GTK 4 e libadwaita." >&2; exit 1; }
 
 rm -rf "$APPDIR" "$DIST"
 mkdir -p "$APPDIR/usr/bin" "$APPDIR/usr/lib" "$APPDIR/usr/src" "$DIST"
