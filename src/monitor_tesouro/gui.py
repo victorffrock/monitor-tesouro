@@ -56,12 +56,12 @@ class RateChart(Gtk.DrawingArea):
         points = self.points
 
         if not points:
-            self._draw_message(cr, width, height, "Sem observações para este vencimento e período.")
+            self._draw_message(cr, width, height, "Sem observações para este vencimento e período.", foreground)
             return
 
         limits = chart.rate_bounds(points)
         if limits is None:
-            self._draw_message(cr, width, height, "Não há taxas válidas para desenhar.")
+            self._draw_message(cr, width, height, "Não há taxas válidas para desenhar.", foreground)
             return
 
         low, high = limits
@@ -114,9 +114,9 @@ class RateChart(Gtk.DrawingArea):
         cr.show_text(right_text)
 
     @staticmethod
-    def _draw_message(cr, width: int, height: int, message: str) -> None:
+    def _draw_message(cr, width: int, height: int, message: str, foreground) -> None:
         """Mostra um estado vazio legível em vez de deixar o gráfico em branco."""
-        cr.set_source_rgb(0.42, 0.42, 0.45)
+        cr.set_source_rgba(foreground.red, foreground.green, foreground.blue, 0.78)
         cr.set_font_size(14)
         extents = cr.text_extents(message)
         cr.move_to(max((width - extents.width) / 2, 12), height / 2)
@@ -372,10 +372,12 @@ class MonitorWindow(Adw.ApplicationWindow):
             self._update_chart()
 
     def _on_period_changed(self, button, days: int) -> None:
-        """Aplica somente o período do botão que ficou selecionado."""
-        if button.get_active():
-            self.period_days = days
-            self._update_chart()
+        """Mantém um período sempre ativo e aplica a escolha ao gráfico."""
+        if not button.get_active():
+            button.set_active(True)
+            return
+        self.period_days = days
+        self._update_chart()
 
     def _update_chart(self) -> None:
         """Prepara pontos para o vencimento e intervalo selecionados."""
