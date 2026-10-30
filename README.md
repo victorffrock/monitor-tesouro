@@ -37,11 +37,16 @@ Requer Python 3.11+; no Linux, instale também Tkinter (por exemplo, `python3-tk
 PYTHONPATH=src python -m monitor_tesouro
 ```
 
-Execute os testes da biblioteca padrão:
+Execute os testes e as verificações de qualidade usadas na CI:
 
 ```bash
+python -m pip install -e '.[dev]'
+ruff check --select E4,E7,E9,F src tests
 PYTHONPATH=src python -m unittest discover -s tests -v
+python -m build
 ```
+
+A CI repete os testes em Python 3.11, 3.12 e 3.13, instala o pacote construído e verifica o comando de terminal. O CodeQL analisa o código em pull requests e semanalmente.
 
 ## Build e publicação
 

@@ -209,7 +209,7 @@ class Janela(tk.Tk):
             dest.chmod(0o755)
             systemd = Path.home() / ".config/systemd/user"
             systemd.mkdir(parents=True, exist_ok=True)
-            service = f'''[Unit]\nDescription=Monitor de taxas do Tesouro IPCA+\nAfter=network-online.target\nWants=network-online.target\n[Service]\nType=oneshot\nExecStart=/usr/bin/env APPIMAGE_EXTRACT_AND_RUN=1 %h/.local/bin/Monitor-Tesouro.AppImage --background --config %h/.config/monitor-tesouro/config.toml\n'''
+            service = '''[Unit]\nDescription=Monitor de taxas do Tesouro IPCA+\nAfter=network-online.target\nWants=network-online.target\n[Service]\nType=oneshot\nExecStart=/usr/bin/env APPIMAGE_EXTRACT_AND_RUN=1 %h/.local/bin/Monitor-Tesouro.AppImage --background --config %h/.config/monitor-tesouro/config.toml\n'''
             timer = "[Unit]\nDescription=Executa o Monitor Tesouro em dias úteis às 18h30\n[Timer]\nOnCalendar=Mon..Fri *-*-* 18:30:00\nPersistent=true\nUnit=monitor-tesouro.service\n[Install]\nWantedBy=timers.target\n"
             (systemd / "monitor-tesouro.service").write_text(service, encoding="utf-8")
             (systemd / "monitor-tesouro.timer").write_text(timer, encoding="utf-8")
@@ -217,7 +217,7 @@ class Janela(tk.Tk):
             subprocess.run(["systemctl", "--user", "enable", "--now", "monitor-tesouro.timer"], check=True, timeout=20)
             apps = Path.home() / ".local/share/applications"
             apps.mkdir(parents=True, exist_ok=True)
-            desktop = f'''[Desktop Entry]\nType=Application\nName=Monitor Tesouro\nComment=Monitor de taxas do Tesouro IPCA+\nExec=/usr/bin/env APPIMAGE_EXTRACT_AND_RUN=1 {dest}\nTerminal=false\nCategories=Finance;Utility;\n'''
+            desktop = '''[Desktop Entry]\nType=Application\nName=Monitor Tesouro\nComment=Monitor de taxas do Tesouro IPCA+\nExec=/usr/bin/env APPIMAGE_EXTRACT_AND_RUN=1 {dest}\nTerminal=false\nCategories=Finance;Utility;\n'''
             (apps / "monitor-tesouro.desktop").write_text(desktop, encoding="utf-8")
             messagebox.showinfo("Agendamento ativado", "O app foi instalado em ~/.local/bin e o timer de dias úteis às 18h30 foi ativado. A execução usa extração automática e não precisa de FUSE.")
         except Exception as e:
