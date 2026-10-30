@@ -150,20 +150,20 @@ def get_history(
     try:
         content, new_metadata = _fetch(url, timeout, metadata, opener)
         if content is None:
-            rows = cached
+            rows = merge_history(legacy, cached)
             status = "Histórico oficial verificado; sem mudanças desde a última atualização."
         else:
             # Uma resposta CSV válida pode não conter toda a série; exigir uma
             # série útil impede substituir por engano um cache mais completo.
             downloaded = core.parse_csv(content, somente_recente=False)
-            rows = merge_history(downloaded, legacy)
-            if len(rows) < len(cached):
-                raise ValueError("A fonte retornou menos pontos que o cache; mantive os dados salvos.")
+            # O cache preserva datas antigas que a fonte possa retirar; a resposta
+            # atual ganha em caso de duplicata para corrigir qualquer valor antigo.
+            rows = merge_history(legacy, cached, downloaded)
             status = "Histórico atualizado pelo Tesouro Transparente."
         write_cache(rows, new_metadata, cache_path)
         return rows, status
     except Exception as error:
-        fallback = merge_history(cached, legacy)
+        fallback = merge_history(legacy, cached)
         if fallback:
             return fallback, f"Sem conexão com a fonte oficial; exibindo o histórico salvo. ({error})"
         raise
