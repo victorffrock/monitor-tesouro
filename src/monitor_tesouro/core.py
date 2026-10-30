@@ -57,8 +57,12 @@ def achar(cabecalhos: dict[str, str], *opcoes: str) -> str | None:
     return None
 
 
-def parse_csv(conteudo: bytes) -> list[dict]:
-    """Lê o CSV oficial, seleciona IPCA+ sem cupom e devolve só a data-base mais recente."""
+def parse_csv(conteudo: bytes, *, somente_recente: bool = True) -> list[dict]:
+    """Lê o CSV oficial e devolve a série completa de IPCA+ principal.
+
+    somente_recente mantém compatibilidade com consumidores que precisam
+    apenas da cotação atual. A interface usa a série completa desde 2002.
+    """
     texto = None
     for enc in ("utf-8-sig", "latin-1"):
         try:
@@ -101,13 +105,15 @@ def parse_csv(conteudo: bytes) -> list[dict]:
         linhas.append({"data_base": dt, "vencimento": dv, "titulo": nome, "taxa_compra_pct": tc, "taxa_venda_pct": tv, "pu_compra": pc, "pu_venda": pv})
     if not linhas:
         raise ValueError("Nenhuma linha IPCA+ principal válida encontrada; confira o layout e os nomes dos títulos")
-    mais_recente = max(x["data_base"] for x in linhas)
-    # Duplicatas eventuais para o mesmo vencimento são reduzidas à última ocorrência do CSV.
+    # Remove duplicatas pelo par data-base/vencimento, preservando a última linha.
     saida = {}
     for x in linhas:
-        if x["data_base"] == mais_recente:
-            saida[x["vencimento"]] = x
-    return [saida[k] for k in sorted(saida)]
+        saida[(x["data_base"], x["vencimento"])] = x
+    linhas = sorted(saida.values(), key=lambda x: (x["vencimento"], x["data_base"]))
+    if somente_recente:
+        mais_recente = max(x["data_base"] for x in linhas)
+        return [x for x in linhas if x["data_base"] == mais_recente]
+    return linhas
 
 
 def cruzamentos(anterior: float, atual: float, patamares: list[float]) -> list[tuple[float, str]]:
