@@ -16,7 +16,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
 
-from datetime import date
+from datetime import date  # noqa: E402
 from threading import Thread  # noqa: E402
 
 from . import chart, core, data  # noqa: E402
