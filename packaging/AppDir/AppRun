@@ -2,10 +2,11 @@
 set -eu
 APPDIR="${APPDIR:-$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)}"
 export PYTHONHOME="$APPDIR/usr"
-export PYTHONPATH="$APPDIR/usr/src"
+export PYTHONPATH="$APPDIR/usr/src:$APPDIR/usr/lib/python3/dist-packages"
+export GI_TYPELIB_PATH="$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0"
+export GSETTINGS_SCHEMA_DIR="$APPDIR/usr/share/glib-2.0/schemas"
+export GTK_PATH="$APPDIR/usr/lib/x86_64-linux-gnu/gtk-4.0"
 export LD_LIBRARY_PATH="$APPDIR/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-export TCL_LIBRARY="$APPDIR/usr/share/tcltk/tcl8.6"
-export TK_LIBRARY="$APPDIR/usr/lib/tcltk/x86_64-linux-gnu/tk8.6"
 if [ -r /etc/pki/tls/certs/ca-bundle.crt ]; then
     export SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt
 elif [ -r /etc/ssl/certs/ca-certificates.crt ]; then
