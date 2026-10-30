@@ -23,7 +23,7 @@ from . import chart, core, data  # noqa: E402
 
 
 APP_ID = "br.com.victorffrock.MonitorTesouro"
-APP_VERSION = "1.0.8"
+APP_VERSION = "1.0.9"
 PROJECT_URL = "https://github.com/victorffrock/monitor-tesouro"
 COLOR_BUY = (0.16, 0.47, 0.84)
 COLOR_SELL = (0.16, 0.57, 0.39)
