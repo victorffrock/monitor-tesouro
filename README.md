@@ -21,6 +21,10 @@ A tela principal mostra um gráfico amplo com a evolução das taxas de compra e
 
 O gráfico consulta a série diária pública completa do Tesouro Transparente, que contém dados desde 2002. Assim, o primeiro uso já pode mostrar anos de histórico, mesmo sem coletas anteriores nesta máquina. A primeira consulta baixa a série oficial; depois o aplicativo guarda uma cópia comprimida no cache do usuário e solicita apenas atualizações quando a fonte publica uma versão nova. Se estiver sem rede, abre o cache e o histórico CSV das versões anteriores.
 
+## Créditos
+
+O diálogo **Sobre o Monitor Tesouro** identifica Victor Ferreira Franco como desenvolvedor, oferece links para documentação, código-fonte e suporte, e declara a assistência de inteligência artificial (OpenAI Codex).
+
 ## Organização do código
 
 - `core.py`: parser CSV, execução CLI, alertas e histórico legado.
