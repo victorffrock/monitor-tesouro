@@ -85,6 +85,14 @@ ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 "$appimagetool" \
     --updateinformation "$UPDATE_INFO" \
     "$APPDIR" "$DIST/$ASSET"
 
+# appimagetool may place the generated zsync metadata relative to its working directory.
+ZSYNC="$DIST/$ASSET.zsync"
+if [[ ! -s "$ZSYNC" ]]; then
+    zsync_candidate="$(find "$ROOT" -maxdepth 3 -type f -name "$(basename "$ASSET").zsync" -print -quit)"
+    [[ -n "$zsync_candidate" ]] || { echo "Metadado .zsync não foi gerado pelo appimagetool." >&2; find "$ROOT" -maxdepth 3 -type f -name "*.zsync" -print >&2; exit 1; }
+    mv "$zsync_candidate" "$ZSYNC"
+fi
+
 cat > "$DIST/Monitor-Tesouro-sem-fuse.sh" <<'LAUNCHER'
 #!/bin/sh
 set -eu
