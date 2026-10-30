@@ -149,7 +149,6 @@ def configurar_log(pasta: Path, somente_console: bool = False) -> logging.Logger
 def baixar(url: str, timeout: int) -> bytes:
     req = Request(url, headers={"User-Agent": "monitor-tesouro/1.0 (uso pessoal)"})
     with urlopen(req, timeout=timeout) as resp:
-        tipo = resp.headers.get("Content-Type", "")
         dados = resp.read()
     if not dados or b"<html" in dados[:500].lower():
         raise ValueError("A URL não retornou um CSV; verifique o endereço no Tesouro Transparente")
