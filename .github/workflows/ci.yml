@@ -61,4 +61,4 @@ jobs:
       - name: Import interface and verify GTK versions
         env:
           PYTHONPATH: src
-        run: xvfb-run -a /usr/bin/python3 -c "import gi; gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1'); from gi.repository import Gtk, Adw; import monitor_tesouro.gui; print(Gtk.get_major_version(), Adw.get_major_version())"
+        run: PYTHONPATH=src xvfb-run -a /usr/bin/python3 packaging/gtk_smoke.py
