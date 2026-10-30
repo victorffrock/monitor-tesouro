@@ -96,7 +96,9 @@ echo "$APPIMAGETOOL_SHA256  $appimagetool" | sha256sum --check --status || { ech
 echo "$RUNTIME_SHA256  $runtime" | sha256sum --check --status || { echo "SHA-256 do runtime AppImage não confere." >&2; exit 1; }
 chmod +x "$appimagetool"
 
-UPDATE_INFO="gh-releases-zsync|$OWNER|$REPO|latest|$ASSET.zsync"
+# A URL zsync estável usa o redirect "latest/download" do GitHub, evitando
+# chamadas à API de releases (e seus limites de requisição no Gear Lever).
+UPDATE_INFO="zsync|https://github.com/$OWNER/$REPO/releases/latest/download/$ASSET.zsync"
 FILE_URL="https://github.com/$OWNER/$REPO/releases/download/$TAG/$ASSET"
 ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 "$appimagetool" \
     --runtime-file "$runtime" \

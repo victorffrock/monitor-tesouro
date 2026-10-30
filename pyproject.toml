@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "monitor-tesouro"
-version = "1.0.8"
+version = "1.0.9"
 description = "Acompanhamento histórico das taxas do Tesouro IPCA+ com GTK 4 e libadwaita"
 readme = "README.md"
 requires-python = ">=3.11"
