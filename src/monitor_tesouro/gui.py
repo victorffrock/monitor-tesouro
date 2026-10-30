@@ -118,8 +118,9 @@ class MonitorWindow(Adw.ApplicationWindow):
         while child:
             nxt = child.get_next_sibling(); self.listbox.remove(child); child = nxt
         latest = {}
+        most_recent = max(x["data_base"] for x in self.rows)
         for r in self.rows:
-            if r["data_base"] == max(x["data_base"] for x in self.rows):
+            if r["data_base"] == most_recent:
                 latest[r["vencimento"]] = r
         for maturity, row in sorted(latest.items()):
             line = Adw.ActionRow(title=f"Tesouro IPCA+ {maturity.year}",
