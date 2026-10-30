@@ -43,7 +43,7 @@ mkdir -p "$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0"
 cp -a /usr/lib/x86_64-linux-gnu/girepository-1.0/. "$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0/"
 install -Dm755 "$PYTHON" "$APPDIR/usr/bin/python3"
 
-# Bundle only non-core shared libraries required by Python SSL/Tk and their closure.
+# Bundle only non-core shared libraries required by Python GTK/Cairo/SSL and their closure.
 libdir="$APPDIR/usr/lib/x86_64-linux-gnu"
 mkdir -p "$libdir"
 SSL_MODULE="$(find "$APPDIR/usr/lib/python$PYTHON_VERSION/lib-dynload" -maxdepth 1 -name '_ssl*.so' -print -quit)"
