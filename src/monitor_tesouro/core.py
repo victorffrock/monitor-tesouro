@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -41,9 +42,10 @@ def numero(valor: str) -> float | None:
     if "," in valor:
         valor = valor.replace(".", "").replace(",", ".")
     try:
-        return float(valor)
+        resultado = float(valor)
     except ValueError:
         return None
+    return resultado if math.isfinite(resultado) else None
 
 
 def data_br(valor: str) -> date:
