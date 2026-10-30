@@ -60,6 +60,8 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(numero("8,10%"), 8.1)
         self.assertIsNone(numero(""))
         self.assertIsNone(numero("inválido"))
+        self.assertIsNone(numero("NaN"))
+        self.assertIsNone(numero("Infinity"))
 
     def test_data_br_valida_e_rejeita_data_incorreta(self):
         self.assertEqual(data_br("28/10/2026"), date(2026, 10, 28))
