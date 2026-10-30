@@ -229,10 +229,13 @@ class MonitorWindow(Adw.ApplicationWindow):
             button = Gtk.ToggleButton(label=label)
             if index:
                 button.set_group(self.period_buttons[0])
-            button.connect("toggled", self._on_period_changed, days)
             controls.append(button)
             self.period_buttons.append(button)
+        # Defina a opção inicial antes de ligar os sinais, evitando um redesenho
+        # durante a construção, antes de o canvas existir.
         self.period_buttons[-1].set_active(True)
+        for button, (_, days) in zip(self.period_buttons, PERIODS):
+            button.connect("toggled", self._on_period_changed, days)
         card.append(controls)
 
         self.chart = RateChart()
