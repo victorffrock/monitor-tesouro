@@ -28,10 +28,6 @@ VERDE = "#26a269"
 GRADE = "#deddda"
 
 
-def carregar_historico(caminho: Path) -> dict[int, list[dict]]:
-    """Compatibilidade local: delega a leitura do CSV ao núcleo."""
-    return monitor.carregar_historico(caminho)
-
 
 class Janela(tk.Tk):
     def __init__(self):
@@ -262,22 +258,28 @@ class Janela(tk.Tk):
             pontos = [ponto for ponto in pontos if ponto["data_base"] >= limite]
 
         if not pontos:
+            if ano is not None and self.historico.get(ano):
+                titulo = "Sem dados neste período"
+                detalhe = "Escolha um intervalo maior para ver as observações anteriores."
+                self.chart_summary.set("Nenhuma observação no intervalo selecionado")
+            else:
+                titulo = "Seu gráfico histórico começa com a primeira atualização."
+                detalhe = "As taxas ficam guardadas neste computador e ganham forma com o tempo."
+                self.chart_summary.set("Ainda não há observações para este vencimento")
             canvas.create_text(
                 largura / 2,
                 altura / 2 - 12,
-                text="Seu gráfico histórico começa com a primeira atualização.",
+                text=titulo,
                 fill=TEXTO,
                 font=("Cantarell", 13, "bold"),
             )
             canvas.create_text(
                 largura / 2,
                 altura / 2 + 16,
-                text="As taxas são guardadas neste computador e ganham forma com o tempo.",
+                text=detalhe,
                 fill=SECUNDARIO,
                 font=("Cantarell", 10),
             )
-            if ano is not None and not self.historico.get(ano):
-                self.chart_summary.set("Ainda não há observações para este vencimento")
             return
 
         valores = [p[chave] for p in pontos for chave in ("taxa_compra_pct", "taxa_venda_pct")]
@@ -327,7 +329,7 @@ class Janela(tk.Tk):
             for indice, ponto in enumerate(pontos):
                 coordenadas.extend((px(indice), py(ponto[chave])))
             if len(coordenadas) >= 4:
-                canvas.create_line(*coordenadas, fill=cor, width=2.5, smooth=True, splinesteps=12)
+                canvas.create_line(*coordenadas, fill=cor, width=2.5)
             for indice, ponto in enumerate(pontos):
                 canvas.create_oval(
                     px(indice) - 3,
