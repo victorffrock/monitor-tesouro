@@ -52,7 +52,14 @@ def main() -> None:
     surface.flush()
     assert len(window.chart.points) == 2
     assert Gtk.get_major_version() == 4
-    print("GTK window instantiated; two-point purchase/sale chart rendered.")
+    about = window.create_about_dialog()
+    assert about.get_application_name() == "Monitor Tesouro"
+    assert about.get_version() == "1.0.8"
+    assert about.get_developer_name() == "Victor Ferreira Franco"
+    assert "inteligência artificial" in about.get_comments()
+    assert about.get_issue_url().endswith("/issues")
+    assert window.about_button.get_menu_model().get_n_items() == 1
+    print("GTK window, About dialog, credits, links, and chart render verified.")
 
 
 if __name__ == "__main__":
