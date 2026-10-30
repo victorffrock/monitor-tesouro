@@ -217,7 +217,7 @@ class Janela(tk.Tk):
             subprocess.run(["systemctl", "--user", "enable", "--now", "monitor-tesouro.timer"], check=True, timeout=20)
             apps = Path.home() / ".local/share/applications"
             apps.mkdir(parents=True, exist_ok=True)
-            desktop = f'''[Desktop Entry]\nType=Application\nName=Monitor Tesouro\nComment=Monitor de taxas do Tesouro IPCA+\nExec=/usr/bin/env APPIMAGE_EXTRACT_AND_RUN=1 {dest}\nTerminal=false\nCategories=Finance;Utility;\n'''
+            desktop = '''[Desktop Entry]\nType=Application\nName=Monitor Tesouro\nComment=Monitor de taxas do Tesouro IPCA+\nExec=/usr/bin/env APPIMAGE_EXTRACT_AND_RUN=1 {dest}\nTerminal=false\nCategories=Finance;Utility;\n'''
             (apps / "monitor-tesouro.desktop").write_text(desktop, encoding="utf-8")
             messagebox.showinfo("Agendamento ativado", "O app foi instalado em ~/.local/bin e o timer de dias úteis às 18h30 foi ativado. A execução usa extração automática e não precisa de FUSE.")
         except Exception as e:
