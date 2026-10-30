@@ -209,7 +209,7 @@ class Janela(tk.Tk):
             dest.chmod(0o755)
             systemd = Path.home() / ".config/systemd/user"
             systemd.mkdir(parents=True, exist_ok=True)
-            service = f'''[Unit]\nDescription=Monitor de taxas do Tesouro IPCA+\nAfter=network-online.target\nWants=network-online.target\n[Service]\nType=oneshot\nExecStart=/usr/bin/env APPIMAGE_EXTRACT_AND_RUN=1 %h/.local/bin/Monitor-Tesouro.AppImage --background --config %h/.config/monitor-tesouro/config.toml\n'''
+            service = '''[Unit]\nDescription=Monitor de taxas do Tesouro IPCA+\nAfter=network-online.target\nWants=network-online.target\n[Service]\nType=oneshot\nExecStart=/usr/bin/env APPIMAGE_EXTRACT_AND_RUN=1 %h/.local/bin/Monitor-Tesouro.AppImage --background --config %h/.config/monitor-tesouro/config.toml\n'''
             timer = "[Unit]\nDescription=Executa o Monitor Tesouro em dias úteis às 18h30\n[Timer]\nOnCalendar=Mon..Fri *-*-* 18:30:00\nPersistent=true\nUnit=monitor-tesouro.service\n[Install]\nWantedBy=timers.target\n"
             (systemd / "monitor-tesouro.service").write_text(service, encoding="utf-8")
             (systemd / "monitor-tesouro.timer").write_text(timer, encoding="utf-8")
