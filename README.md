@@ -21,6 +21,14 @@ A tela principal mostra um gráfico amplo com a evolução das taxas de compra e
 
 O gráfico consulta a série diária pública completa do Tesouro Transparente, que contém dados desde 2002. Assim, o primeiro uso já pode mostrar anos de histórico, mesmo sem coletas anteriores nesta máquina. A primeira consulta baixa a série oficial; depois o aplicativo guarda uma cópia comprimida no cache do usuário e solicita apenas atualizações quando a fonte publica uma versão nova. Se estiver sem rede, abre o cache e o histórico CSV das versões anteriores.
 
+## Organização do código
+
+- `core.py`: parser CSV, execução CLI, alertas e histórico legado.
+- `data.py`: cache comprimido com gravação atômica, atualização HTTP condicional e fallback offline.
+- `chart.py`: seleção pura de vencimento/período, escala e conversão dos pontos para coordenadas.
+- `gui.py`: janela GTK 4/libadwaita, controles e renderização Cairo.
+- `tests/` e `packaging/gtk_smoke.py`: testes de parser, cache, geometria do gráfico e renderização real da janela.
+
 ## Recursos
 
 - Consulta o CSV diário oficial do Tesouro Transparente.
