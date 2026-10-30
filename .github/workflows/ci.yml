@@ -50,3 +50,15 @@ jobs:
         run: PYTHONPATH=src python -m unittest discover -s tests -v
       - name: Check syntax
         run: python -m compileall -q src tests
+
+  gtk-smoke:
+    name: GTK 4 and libadwaita runtime
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install native GTK runtime
+        run: sudo apt-get update && sudo apt-get install --yes python3-gi gir1.2-gtk-4.0 gir1.2-adw-1 xvfb
+      - name: Import interface and verify GTK versions
+        env:
+          PYTHONPATH: src
+        run: xvfb-run -a /usr/bin/python3 -c "import gi; gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1'); from gi.repository import Gtk, Adw; import monitor_tesouro.gui; print(Gtk.get_major_version(), Adw.get_major_version())"
