@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import csv
 from datetime import date, timedelta
 from pathlib import Path
 import sys
@@ -211,7 +210,7 @@ class Janela(tk.Tk):
             self.tabela.insert(
                 "",
                 "end",
-                iid=str(ano),
+                iid=item["vencimento"].isoformat(),
                 values=(
                     f"Tesouro IPCA+ {ano}",
                     self._percentual(item["taxa_compra_pct"]),
@@ -246,7 +245,7 @@ class Janela(tk.Tk):
         selecionados = self.tabela.selection()
         if not selecionados:
             return
-        self.year.set(selecionados[0])
+        self.year.set(str(date.fromisoformat(selecionados[0]).year))
         self._desenhar_grafico()
 
     def _desenhar_grafico(self):
@@ -342,10 +341,11 @@ class Janela(tk.Tk):
 
         primeira = pontos[0]
         ultima = pontos[-1]
+        variacao = f"{ultima['taxa_compra_pct'] - primeira['taxa_compra_pct']:+.3f}".replace(".", ",")
         self.chart_summary.set(
             f"Compra {self._percentual(ultima['taxa_compra_pct'])}  ·  "
             f"Venda {self._percentual(ultima['taxa_venda_pct'])}  ·  "
-            f"variação da compra {ultima['taxa_compra_pct'] - primeira['taxa_compra_pct']:+.3f} p.p.".replace(".", ",")
+            f"variação da compra {variacao} p.p."
         )
 
     def _erro(self, texto: str):
@@ -429,9 +429,6 @@ vencimentos = {monitor.json.dumps(resumo.get("vencimentos", [2029, 2035, 2045]))
         self.config_data = monitor.carregar_config(CONFIG)
         janela.destroy()
         self.status.set("Preferências salvas.")
-
-    def mainloop(self, n=0):
-        super().mainloop(n)
 
 
 def main():
