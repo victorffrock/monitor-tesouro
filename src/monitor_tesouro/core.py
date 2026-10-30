@@ -10,16 +10,12 @@ import csv
 import json
 import logging
 from logging.handlers import RotatingFileHandler
-import os
 from pathlib import Path
 import re
-import smtplib
-import ssl
 import subprocess
 import sys
 import tomllib
 from datetime import date, datetime, timedelta
-from email.message import EmailMessage
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
@@ -187,39 +183,45 @@ def gravar_historico(caminho: Path, linhas: list[dict], hoje: date) -> None:
         w.writerows(novo)
 
 
-def notificar(titulo: str, corpo: str, cfg: dict, log: logging.Logger) -> None:
-    desktop = cfg.get("desktop", {})
-    if desktop.get("habilitado", True):
-        comando = desktop.get("comando", ["notify-send", "--app-name=Monitor Tesouro"])
-        try:
-            subprocess.run([*comando, titulo, corpo], check=True, timeout=15, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
-        except (OSError, subprocess.SubprocessError) as e:
-            log.error("Notificação desktop falhou: %s", e)
-    email_cfg = cfg.get("email", {})
-    if email_cfg.get("habilitado", False):
-        try:
-            senha = os.environ.get(email_cfg.get("variavel_senha", "TESOURO_SMTP_PASSWORD"), "")
-            arquivo_senha = email_cfg.get("arquivo_senha")
-            if not senha and arquivo_senha:
-                p = Path(arquivo_senha).expanduser()
-                if p.stat().st_mode & 0o077:
-                    raise PermissionError(f"Permissões inseguras em {p}; use chmod 600")
-                senha = p.read_text(encoding="utf-8").strip()
-            if not senha:
-                raise ValueError("Senha SMTP não definida")
-            msg = EmailMessage()
-            msg["Subject"] = titulo
-            msg["From"] = email_cfg["remetente"]
-            msg["To"] = email_cfg["destinatario"]
-            msg.set_content(corpo)
-            host, porta = email_cfg.get("servidor", "smtp.gmail.com"), int(email_cfg.get("porta", 587))
-            with smtplib.SMTP(host, porta, timeout=20) as smtp:
-                smtp.starttls(context=ssl.create_default_context())
-                smtp.login(email_cfg.get("usuario", email_cfg["remetente"]), senha)
-                smtp.send_message(msg)
-        except Exception as e:
-            log.error("E-mail falhou: %s", e)
+def carregar_historico(caminho: Path) -> dict[int, list[dict]]:
+    """Lê as séries históricas por ano de vencimento, ignorando linhas inválidas."""
+    series: dict[int, list[dict]] = {}
+    if not caminho.exists():
+        return series
+    with caminho.open(encoding="utf-8", newline="") as arquivo:
+        for linha in csv.DictReader(arquivo):
+            try:
+                vencimento = date.fromisoformat(linha["vencimento"])
+                ponto = {
+                    "data_base": date.fromisoformat(linha["data_base"]),
+                    "taxa_compra_pct": float(linha["taxa_compra_pct"]),
+                    "taxa_venda_pct": float(linha["taxa_venda_pct"]),
+                }
+            except (KeyError, TypeError, ValueError):
+                continue
+            series.setdefault(vencimento.year, []).append(ponto)
+    for pontos in series.values():
+        pontos.sort(key=lambda ponto: ponto["data_base"])
+    return series
 
+
+def notificar(titulo: str, corpo: str, cfg: dict, log: logging.Logger) -> None:
+    """Envia alertas somente pelas notificações da área de trabalho."""
+    desktop = cfg.get("desktop", {})
+    if not desktop.get("habilitado", True):
+        return
+    comando = desktop.get("comando", ["notify-send", "--app-name=Monitor Tesouro"])
+    try:
+        subprocess.run(
+            [*comando, titulo, corpo],
+            check=True,
+            timeout=15,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except (OSError, subprocess.SubprocessError) as erro:
+        log.error("Notificação desktop falhou: %s", erro)
 
 def resumo(linhas: list[dict], historico: Path, cfg: dict) -> str:
     anos = cfg.get("resumo", {}).get("vencimentos", [2029, 2035, 2045])
