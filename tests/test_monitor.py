@@ -38,6 +38,19 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(rows[0]["data_base"], date(2026, 10, 28))
         self.assertEqual(rows[0]["taxa_compra_pct"], 8.1)
 
+    def test_mantem_serie_historica_completa_quando_solicitada(self):
+        csv_text = (
+            "Tipo Titulo;Data Vencimento;Data Base;Taxa Compra Manhã;Taxa Venda Manhã;PU Compra Manhã;PU Venda Manhã\\n"
+            "Tesouro IPCA+;15/05/2035;27/10/2026;7,10;7,20;900,00;890,00\\n"
+            "Tesouro IPCA+;15/05/2035;28/10/2026;8,10;8,20;1.000,00;990,00\\n"
+            "Tesouro IPCA+;15/05/2040;27/10/2026;7,30;7,40;800,00;790,00\\n"
+        ).encode("utf-8")
+        rows = parse_csv(csv_text, somente_recente=False)
+        self.assertEqual(len(rows), 3)
+        self.assertEqual([r["data_base"] for r in rows], [
+            date(2026, 10, 27), date(2026, 10, 28), date(2026, 10, 27)
+        ])
+
     def test_rejeita_csv_sem_colunas_esperadas(self):
         with self.assertRaisesRegex(ValueError, "Cabeçalhos esperados"):
             parse_csv(b"coluna;outra\nx;y\n")
