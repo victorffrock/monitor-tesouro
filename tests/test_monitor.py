@@ -18,9 +18,9 @@ from monitor_tesouro.core import (
 class ParserTests(unittest.TestCase):
     def test_csv_brasileiro_filtra_ipca_principal(self):
         csv_text = (
-            "Tipo Titulo;Data Vencimento;Data Base;Taxa Compra Manhã;Taxa Venda Manhã;PU Compra Manhã;PU Venda Manhã\\n"
-            "Tesouro IPCA+;15/05/2035;28/10/2026;8,10;8,20;1.000,00;990,00\\n"
-            "Tesouro IPCA+ com Juros Semestrais;15/05/2035;28/10/2026;7,0;7,1;100,00;99,00\\n"
+            "Tipo Titulo;Data Vencimento;Data Base;Taxa Compra Manhã;Taxa Venda Manhã;PU Compra Manhã;PU Venda Manhã\n"
+            "Tesouro IPCA+;15/05/2035;28/10/2026;8,10;8,20;1.000,00;990,00\n"
+            "Tesouro IPCA+ com Juros Semestrais;15/05/2035;28/10/2026;7,0;7,1;100,00;99,00\n"
         ).encode("utf-8")
         rows = parse_csv(csv_text)
         self.assertEqual(len(rows), 1)
@@ -29,9 +29,9 @@ class ParserTests(unittest.TestCase):
 
     def test_seleciona_apenas_a_data_base_mais_recente(self):
         csv_text = (
-            "Tipo Titulo;Data Vencimento;Data Base;Taxa Compra Manhã;Taxa Venda Manhã;PU Compra Manhã;PU Venda Manhã\\n"
-            "Tesouro IPCA+;15/05/2035;27/10/2026;7,10;7,20;900,00;890,00\\n"
-            "Tesouro IPCA+;15/05/2035;28/10/2026;8,10;8,20;1.000,00;990,00\\n"
+            "Tipo Titulo;Data Vencimento;Data Base;Taxa Compra Manhã;Taxa Venda Manhã;PU Compra Manhã;PU Venda Manhã\n"
+            "Tesouro IPCA+;15/05/2035;27/10/2026;7,10;7,20;900,00;890,00\n"
+            "Tesouro IPCA+;15/05/2035;28/10/2026;8,10;8,20;1.000,00;990,00\n"
         ).encode("utf-8")
         rows = parse_csv(csv_text)
         self.assertEqual(len(rows), 1)
@@ -40,7 +40,7 @@ class ParserTests(unittest.TestCase):
 
     def test_rejeita_csv_sem_colunas_esperadas(self):
         with self.assertRaisesRegex(ValueError, "Cabeçalhos esperados"):
-            parse_csv(b"coluna;outra\\nx;y\\n")
+            parse_csv(b"coluna;outra\nx;y\n")
 
     def test_numero_reconhece_formato_brasileiro_e_valor_invalido(self):
         self.assertEqual(numero("1.234,56"), 1234.56)
