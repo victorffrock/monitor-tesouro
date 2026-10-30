@@ -142,9 +142,11 @@ class MonitorWindow(Adw.ApplicationWindow):
             self.listbox.append(line)
 
     def selection_changed(self, *_args):
-        if not self.rows or not self.years: return
+        if not self.rows or not self.years:
+            return
         index = self.title_select.get_selected()
-        if index >= len(self.years): return
+        if index >= len(self.years):
+            return
         year = self.years[index]
         self.series = sorted((r for r in self.rows if r["vencimento"].year == year), key=lambda r:r["data_base"])
         self.chart.queue_draw()
@@ -153,7 +155,8 @@ class MonitorWindow(Adw.ApplicationWindow):
         if button.get_active():
             self.period = days
             for other, other_days in self.period_buttons:
-                if other_days != days: other.set_active(False)
+                if other_days != days:
+                    other.set_active(False)
             self.chart.queue_draw()
 
     def draw_chart(self, area, cr, width, height):
@@ -192,8 +195,10 @@ class MonitorWindow(Adw.ApplicationWindow):
             for i,p in enumerate(points):
                 x=left+(p["data_base"]-first).days/max((last-first).days,1)*(right-left)
                 y=bottom-(p[key]-lo)/(hi-lo)*(bottom-top)
-                if i==0: cr.move_to(x,y)
-                else: cr.line_to(x,y)
+                if i == 0:
+                    cr.move_to(x, y)
+                else:
+                    cr.line_to(x, y)
             cr.stroke()
         cr.set_source_rgba(fg.red,fg.green,fg.blue,.75)
         cr.move_to(left,bottom+22)
