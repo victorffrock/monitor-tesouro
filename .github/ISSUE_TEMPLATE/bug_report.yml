@@ -1,0 +1,30 @@
+name: Relatar um problema
+description: Conte o que aconteceu para que possamos reproduzir o problema.
+labels: [bug]
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o comportamento observado.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Como reproduzir
+      description: Passos mínimos para reproduzir o problema.
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Sistema e versão do app
+      placeholder: Fedora Silverblue 43; Monitor Tesouro 1.0.0
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log sanitizado
+      description: Remova endereços de e-mail, senhas, tokens e dados pessoais antes de enviar.

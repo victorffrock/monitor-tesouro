@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Monitor Tesouro
+Comment=Monitor de taxas do Tesouro IPCA+
+Exec=AppRun
+Icon=monitor-tesouro
+Terminal=false
+Categories=Finance;Utility;
+StartupNotify=true
+X-AppImage-Version=@VERSION@

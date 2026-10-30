@@ -1,0 +1,29 @@
+# URL atual do CSV oficial; pode ser substituída se o Tesouro alterar o recurso.
+[fonte]
+url = "https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv"
+timeout_segundos = 45
+
+[armazenamento]
+diretorio = "~/.local/share/monitor-tesouro"
+
+[alertas]
+patamares_pct = [7.0, 8.0, 9.0, 10.0]
+
+[notificacoes.desktop]
+habilitado = true
+comando = ["notify-send", "--app-name=Monitor Tesouro"]
+
+[notificacoes.email]
+habilitado = false
+servidor = "smtp.gmail.com"
+porta = 587
+usuario = "seu.email@gmail.com"
+remetente = "seu.email@gmail.com"
+destinatario = "destino@example.com"
+variavel_senha = "TESOURO_SMTP_PASSWORD"
+# Alternativamente, caminho para senha em arquivo com permissão 0600:
+# arquivo_senha = "~/.config/monitor-tesouro/smtp-senha.txt"
+
+[resumo]
+habilitado = false
+vencimentos = [2029, 2035, 2045]
