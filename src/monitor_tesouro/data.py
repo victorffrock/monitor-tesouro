@@ -153,8 +153,8 @@ def get_history(
             rows = merge_history(legacy, cached)
             status = "Histórico oficial verificado; sem mudanças desde a última atualização."
         else:
-            # Uma resposta CSV válida pode não conter toda a série; exigir uma
-            # série útil impede substituir por engano um cache mais completo.
+            # Mesclar preserva dados antigos que a fonte eventualmente retire,
+            # sem perder a resposta oficial atual.
             downloaded = core.parse_csv(content, somente_recente=False)
             # O cache preserva datas antigas que a fonte possa retirar; a resposta
             # atual ganha em caso de duplicata para corrigir qualquer valor antigo.
