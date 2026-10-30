@@ -17,9 +17,9 @@ No Fedora Silverblue, marque o AppImage como executável e abra-o. Para usar o l
 
 ## Acompanhar as taxas
 
-A tela principal mostra um gráfico amplo com a evolução das taxas de compra e venda. Escolha o vencimento e o período que deseja ver. A tabela abaixo mostra as taxas mais recentes; selecione uma linha para abrir o histórico daquele título.
+A tela principal mostra um gráfico amplo com a evolução das taxas de compra e venda. Escolha o vencimento e o período que deseja ver. A lista abaixo mostra as cotações mais recentes; selecione um título para destacar sua série no gráfico.
 
-O gráfico consulta a série diária pública completa do Tesouro Transparente, que contém dados desde 2002. Assim, o primeiro uso já pode mostrar anos de histórico, mesmo sem coletas anteriores nesta máquina. A conexão é necessária para atualizar e consultar a fonte; a aplicação também mantém dados locais usados pelo monitor.
+O gráfico consulta a série diária pública completa do Tesouro Transparente, que contém dados desde 2002. Assim, o primeiro uso já pode mostrar anos de histórico, mesmo sem coletas anteriores nesta máquina. A primeira consulta baixa a série oficial; depois o aplicativo guarda uma cópia comprimida no cache do usuário e solicita apenas atualizações quando a fonte publica uma versão nova. Se estiver sem rede, abre o cache e o histórico CSV das versões anteriores.
 
 ## Recursos
 
@@ -36,7 +36,7 @@ O programa consulta dados públicos do Tesouro Transparente e mantém configura�
 
 ## Execução pelo código-fonte
 
-Requer Python 3.11+, GTK 4, libadwaita e PyGObject (por exemplo, `python3-gi`, `gir1.2-gtk-4.0` e `gir1.2-adw-1` no Ubuntu). Para abrir a interface:
+Requer Python 3.11+, GTK 4, libadwaita, PyGObject e Cairo (por exemplo, `python3-gi`, `python3-gi-cairo`, `gir1.2-gtk-4.0` e `gir1.2-adw-1` no Ubuntu). Para abrir a interface:
 
 ```bash
 PYTHONPATH=src python -m monitor_tesouro
