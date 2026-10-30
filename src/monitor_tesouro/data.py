@@ -14,6 +14,7 @@ import csv
 from datetime import date
 import gzip
 import json
+import math
 import os
 from pathlib import Path
 import tempfile
@@ -38,7 +39,18 @@ def merge_history(*collections: list[dict]) -> list[dict]:
     merged = {}
     for collection in collections:
         for row in collection:
-            merged[_key(row)] = row
+            try:
+                measurements = (
+                    float(row["taxa_compra_pct"]),
+                    float(row["taxa_venda_pct"]),
+                    float(row["pu_compra"]),
+                    float(row["pu_venda"]),
+                )
+                key = _key(row)
+            except (KeyError, TypeError, ValueError):
+                continue
+            if all(math.isfinite(value) for value in measurements):
+                merged[key] = row
     return sorted(merged.values(), key=lambda row: (_key(row)))
 
 
