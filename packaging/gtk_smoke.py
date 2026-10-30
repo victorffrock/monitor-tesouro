@@ -16,15 +16,16 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gtk  # noqa: E402
 
-from monitor_tesouro.gui import APP_ID, MonitorWindow  # noqa: E402
+from monitor_tesouro.gui import APP_ID, MonitorApplication, MonitorWindow  # noqa: E402
 
 
 def main() -> None:
     """Build the window, populate a real series, and execute Cairo drawing."""
     Adw.init()
-    app = Adw.Application(application_id=APP_ID)
+    app = MonitorApplication()
     app.register()
     window = MonitorWindow(app, load_on_start=False)
+    app.window = window
     maturity = date(2035, 5, 15)
     points = [
         {
