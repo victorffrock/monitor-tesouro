@@ -126,7 +126,7 @@ class RateChart(Gtk.DrawingArea):
 class MonitorWindow(Adw.ApplicationWindow):
     """Composição principal da aplicação e ligação entre controles e dados."""
 
-    def __init__(self, application):
+    def __init__(self, application, load_on_start: bool = True):
         super().__init__(application=application, title="Monitor Tesouro")
         self.set_default_size(1050, 820)
         self.set_size_request(720, 620)
@@ -136,7 +136,8 @@ class MonitorWindow(Adw.ApplicationWindow):
         self.period_days = 0
 
         self._build_window()
-        self.refresh_history()
+        if load_on_start:
+            self.refresh_history()
 
     def _build_window(self) -> None:
         """Monta a hierarquia visual usando componentes GTK e Adwaita."""
