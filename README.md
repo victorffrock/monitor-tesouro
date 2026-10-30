@@ -3,7 +3,7 @@
 [![CI](https://github.com/victorffrock/monitor-tesouro/actions/workflows/ci.yml/badge.svg)](https://github.com/victorffrock/monitor-tesouro/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/victorffrock/monitor-tesouro)](https://github.com/victorffrock/monitor-tesouro/releases/latest)
 
-Aplicação Linux para acompanhar taxas de compra e venda dos títulos Tesouro IPCA+ principal, com alertas por patamar, histórico local, notificações e resumo diário.
+Aplicação Linux para acompanhar taxas dos títulos Tesouro IPCA+ principal, com um gráfico histórico de compra e venda, alertas simples e dados guardados localmente.
 
 ## Baixar
 
@@ -15,19 +15,24 @@ Obtenha a versão mais recente em [Releases](https://github.com/victorffrock/mon
 
 No Fedora Silverblue, marque o AppImage como executável e abra-o. Para usar o launcher sem FUSE, mantenha os dois arquivos na mesma pasta e execute `./Monitor-Tesouro-sem-fuse.sh`.
 
+## Acompanhar as taxas
+
+A tela principal mostra um gráfico amplo com a evolução das taxas de compra e venda. Escolha o vencimento e o período que deseja ver. A tabela abaixo mostra as taxas mais recentes; selecione uma linha para abrir o histórico daquele título.
+
+O histórico é criado a partir das atualizações feitas enquanto o app está instalado e fica em `~/.local/share/monitor-tesouro/historico.csv`. Registros anteriores são preservados ao atualizar o aplicativo. Os dados históricos não são baixados de outro serviço, então o gráfico vai ganhando pontos com o uso.
+
 ## Recursos
 
 - Consulta o CSV diário oficial do Tesouro Transparente.
-- Filtra Tesouro IPCA+ sem juros semestrais e apresenta compra, venda, PU e data-base.
-- Detecta cruzamentos de alta e de queda nos patamares configurados.
-- Guarda estado, histórico e logs em `~/.local/share/monitor-tesouro/`.
-- Notifica na área de trabalho e, opcionalmente, por SMTP.
-- Permite habilitar timer systemd de usuário para dias úteis às 18h30.
-- Não exige dependências Python externas; requer Python 3.11+ no modo código-fonte.
+- Mostra taxas de compra e venda, preço unitário e data-base.
+- Compara a evolução das taxas ao longo do tempo por vencimento.
+- Detecta cruzamentos dos patamares configurados e pode exibir notificações na área de trabalho.
+- Guarda estado, histórico e logs localmente em `~/.local/share/monitor-tesouro/`.
+- Não envia e-mails nem exige dependências Python externas; requer Python 3.11+ no modo código-fonte.
 
 ## Dados e privacidade
 
-O programa baixa dados públicos do Tesouro Transparente e mantém configuração, senha SMTP, estado, histórico e logs localmente. A senha de aplicativo é salva separadamente com permissão `0600`. Nenhum dado financeiro pessoal é coletado. Este projeto serve para monitoramento informativo, não é recomendação de investimento.
+O programa consulta dados públicos do Tesouro Transparente e mantém configuração, histórico e logs localmente. Notificações, se habilitadas, usam a área de trabalho do Linux. O app não pede endereço de e-mail nem senha SMTP. Este projeto serve para monitoramento informativo, não é recomendação de investimento.
 
 ## Execução pelo código-fonte
 
