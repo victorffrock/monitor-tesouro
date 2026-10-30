@@ -22,6 +22,12 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 
+[project.optional-dependencies]
+dev = [
+  "build==1.6.1",
+  "ruff==0.17.3",
+]
+
 [project.scripts]
 monitor-tesouro = "monitor_tesouro.core:principal"
 
@@ -30,3 +36,6 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+line-length = 120
